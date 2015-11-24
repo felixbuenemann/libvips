@@ -55,6 +55,8 @@
  * 	- allow zip > 4gb if we have a recent libgsf
  * 9/9/15
  * 	- better overlap handling, thanks robclouth 
+ * 24/11/15
+ * 	- don't write empty tiles in google mode
  * 25/11/15
  * 	- always strip tile metadata 
  * 16/12/15
@@ -1201,11 +1203,13 @@ strip_work( VipsThreadState *state, void *a )
 	 */
 	if( dz->layout == VIPS_FOREIGN_DZ_LAYOUT_GOOGLE &&
 		tile_equal( x, dz->ink ) ) { 
+		g_object_unref( x );
+
 #ifdef DEBUG_VERBOSE
+#endif /*DEBUG_VERBOSE*/
 		printf( "strip_work: skipping blank tile %d x %d\n", 
 			state->x / dz->tile_size, 
 			state->y / dz->tile_size ); 
-#endif /*DEBUG_VERBOSE*/
 
 		return( 0 ); 
 	}
@@ -1623,16 +1627,6 @@ vips_foreign_save_dz_build( VipsObject *object )
 		vips_area_unref( VIPS_AREA( background ) ); 
 	}
 
-	/* We use ink in google mode to check for blank tiles.
-	 */
-	if( dz->layout == VIPS_FOREIGN_DZ_LAYOUT_GOOGLE ) {
-		if( !(dz->ink = vips__vector_to_ink( 
-			class->nickname, save->ready,
-			VIPS_AREA( save->background )->data, NULL, 
-			VIPS_AREA( save->background )->n )) )
-			return( -1 );
-	}
-
 	if( dz->overlap >= dz->tile_size ) {
 		vips_error( "dzsave", 
 			"%s", _( "overlap must be less than tile "
@@ -1666,6 +1660,16 @@ vips_foreign_save_dz_build( VipsObject *object )
 	VIPS_UNREF( save->ready );
 	save->ready = z;
 }
+
+	/* We use ink in google mode to check for blank tiles.
+	 */
+	if( dz->layout == VIPS_FOREIGN_DZ_LAYOUT_GOOGLE ) {
+		if( !(dz->ink = vips__vector_to_ink( 
+			class->nickname, save->ready,
+			VIPS_AREA( save->background )->data, NULL, 
+			VIPS_AREA( save->background )->n )) )
+			return( -1 );
+	}
 
 	/* The real pixels we have from our input. This is about to get
 	 * expanded with background. 

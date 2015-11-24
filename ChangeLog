@@ -85,6 +85,7 @@
 - added vips_mapim() ... resample with an index image, plus test
 - try to improve vips_resize() quality a little more
 - vips_resize() can do non-square resizes
+- dzsave won't write empty tiles in google mode
 - dzsave removes tile metadata by default, thanks Benjamin
 - jpeg strip option removes a little more, thanks Benjamin
 - added vips_image_new_from_memory_copy()
