@@ -5,6 +5,7 @@ matrix:
     - os: linux
       sudo: required
       dist: precise
+      cache: ccache
       before_install:
         - sudo apt-get update -qq
         - sudo apt-get install -y
@@ -16,7 +17,7 @@ matrix:
           libcfitsio3-dev libgsl0-dev libmatio-dev
           liborc-0.4-dev liblcms2-dev libpoppler-glib-dev
           libpango1.0-dev libgsf-1-dev libopenslide-dev
-          libgif-dev librsvg2-dev
+          libgif-dev librsvg2-dev libopenexr-dev
           python-dev
       before_script:
         - ./bootstrap.sh
@@ -28,6 +29,7 @@ matrix:
     - os: linux
       sudo: required
       dist: trusty
+      cache: ccache
       before_install:
         - sudo apt-get update -qq
         - sudo apt-get install -y
@@ -39,7 +41,7 @@ matrix:
           libcfitsio3-dev libgsl0-dev libmatio-dev
           liborc-0.4-dev liblcms2-dev libpoppler-glib-dev
           libpango1.0-dev libgsf-1-dev libopenslide-dev
-          libgif-dev librsvg2-dev
+          libgif-dev librsvg2-dev libopenexr-dev
           python-dev python-gi-dev libgirepository1.0-dev
       before_script:
         - ./bootstrap.sh
@@ -55,18 +57,25 @@ matrix:
           /usr/bin/python -m unittest -v test_all
     - os: osx
       osx_image: xcode7.3
+      cache:
+        - ccache
+        - directories:
+          - /usr/local/Cellar/libxml2
+      before_cache:
+        - brew cleanup libxml2
       before_install:
         - brew update
         - brew install
-          pkg-config automake gtk-doc
+          ccache pkg-config
+          automake gtk-doc
           gobject-introspection
-          fftw mozjpeg
+          fftw mozjpeg libexif
           libpng webp libtiff
           swig imagemagick
           cfitsio homebrew/science/libmatio
           orc little-cms2 poppler
           pango libgsf openslide
-          giflib librsvg libexif
+          giflib librsvg openexr
           python pygobject3
       before_script:
         - ./bootstrap.sh
@@ -76,7 +85,7 @@ matrix:
           --with-jpeg-includes=/usr/local/opt/mozjpeg/include
           --with-jpeg-libraries=/usr/local/opt/mozjpeg/lib
           --enable-pyvips8
-        - make -j`nproc`
+        - PATH="/usr/local/opt/ccache/libexec:$PATH" make -j`sysctl -n hw.ncpu`
       script:
         - make check
         - cd test &&
