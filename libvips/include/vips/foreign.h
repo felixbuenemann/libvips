@@ -507,6 +507,7 @@ int vips_magicksave_buffer( VipsImage *in, void **buf, size_t *len, ... )
  * @VIPS_FOREIGN_PNG_FILTER_UP: difference up
  * @VIPS_FOREIGN_PNG_FILTER_AVG: average of left and up
  * @VIPS_FOREIGN_PNG_FILTER_PAETH: pick best neighbor predictor automatically
+ * @VIPS_FOREIGN_PNG_FILTER_FAST: fast adaptive
  * @VIPS_FOREIGN_PNG_FILTER_ALL: adaptive
  *
  * http://www.w3.org/TR/PNG-Filters.html
@@ -518,6 +519,7 @@ typedef enum /*< flags >*/ {
 	VIPS_FOREIGN_PNG_FILTER_UP = 0x20,
 	VIPS_FOREIGN_PNG_FILTER_AVG = 0x40,
 	VIPS_FOREIGN_PNG_FILTER_PAETH = 0x80,
+	VIPS_FOREIGN_PNG_FILTER_FAST = 0x38,
 	VIPS_FOREIGN_PNG_FILTER_ALL = 0xF8
 } VipsForeignPngFilter;
 
